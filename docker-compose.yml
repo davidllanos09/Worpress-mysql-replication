@@ -1,0 +1,50 @@
+services:
+    db-master_1:
+        hostname: db-master
+        image: mysql
+        volumes:
+            - data-master:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=univalle
+            - MYSQL_DATABASE=wordpress
+            - MYSQL_USER=usuario
+            - MYSQL_PASSWORD=univalle
+        ports:
+          - 3306:3306
+        expose:
+          - 3306
+    db-slave_1:
+        hostname: db-slave
+        image: mysql
+        volumes:
+            - data-slave:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=univalle
+            - MYSQL_DATABASE=wordpress
+            - MYSQL_USER=usuario
+            - MYSQL_PASSWORD=univalle
+        ports:
+          - 3308:3306
+        expose:
+          - 3308
+    web_1:
+        hostname: web-wordpress
+        restart: always
+        image: wordpress
+        depends_on:
+            - db-master
+        volumes:
+            - wordpress:/var/www/html
+        environment:
+            - WORDPRESS_DB_USER=root
+            - WORDPRESS_DB_PASSWORD=univalle
+            - WORDPRESS_DB_HOST=db-master
+            - WORDPRESS_DB_NAME=wordpress
+        ports:
+            - 8080:80
+        expose:
+          - 8080
+volumes:
+    data-master:
+    data-slave:
+    wordpress:
